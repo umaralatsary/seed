@@ -327,7 +327,7 @@ class Seed:
                         if len(batch) == 5:
                             payload = {'egg_piece_ids':batch}
                             await self.egg_piece_merge(query=query, payload=payload)
-                    if os.getenv('AUTO_SELL_TRANSFER_EGG'):
+                    if os.getenv('AUTO_SELL_TRANSFER_EGG') == 'True':
                         await self.me_egg(query=query, id=id)
         except ClientResponseError as e:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Egg Piece: {str(e)} ]{Style.RESET_ALL}")
@@ -878,9 +878,9 @@ class Seed:
                         else:
                             restart_times.append(datetime.fromisoformat(worms['data']['created_at'].replace('Z', '+00:00')).astimezone().timestamp())
                             self.print_timestamp(f"{Fore.YELLOW + Style.BRIGHT}[ Next Worms Can Be Catch At {datetime.fromisoformat(worms['data']['created_at'].replace('Z', '+00:00')).astimezone().strftime('%x %X %Z')} ]{Style.RESET_ALL}")
-                    if os.getenv('AUTO_SELL_TRANSFER_EGG'):
+                    if os.getenv('AUTO_SELL_TRANSFER_EGG') == 'True':
                         await self.me_egg(query=query, id=id)
-                    if os.getenv('AUTO_SELL_WORMS'):
+                    if os.getenv('AUTO_SELL_WORMS') == 'True':
                         await self.me_worms(query=query, id=id)
 
                 for (query, name, id) in accounts:
@@ -901,7 +901,7 @@ class Seed:
                     )
                     await self.is_leader_bird(query=query)
 
-                if os.getenv('AUTO_UPGRADE'):
+                if os.getenv('AUTO_UPGRADE') == 'True':
                     for (query, name, id) in accounts:
                         self.print_timestamp(
                             f"{Fore.WHITE + Style.BRIGHT}[ Boost ]{Style.RESET_ALL}"
@@ -911,7 +911,7 @@ class Seed:
                         await self.upgrade_mining_seed(query=query)
                         await self.upgrade_storage_size(query=query)
 
-                if os.getenv('AUTO_SPIN'):
+                if os.getenv('AUTO_SPIN') == 'True':
                     for (query, name, id) in accounts:
                         self.print_timestamp(
                             f"{Fore.WHITE + Style.BRIGHT}[ Spin & Merge Egg ]{Style.RESET_ALL}"
