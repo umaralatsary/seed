@@ -38,10 +38,10 @@ class Seed:
             'User-Agent': FakeUserAgent().random
         }
         self.telegram_id = os.getenv('TELEGRAM_ID')
-        self.price_common_egg=int(os.getenv('PRICE_COMMON_EGG'))
-        self.price_legendary_worm=int(os.getenv('PRICE_LEGENDARY_WORM'))
-        self.price_epic_worm=int(os.getenv('PRICE_EPIC_WORM'))
-        self.price_rare_worm=int(os.getenv('PRICE_RARE_WORM'))
+        self.price_common_egg=os.getenv('PRICE_COMMON_EGG')
+        self.price_legendary_worm=os.getenv('PRICE_LEGENDARY_WORM')
+        self.price_epic_worm=os.getenv('PRICE_EPIC_WORM')
+        self.price_rare_worm=os.getenv('PRICE_RARE_WORM')
 
     def clear_terminal(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -220,18 +220,18 @@ class Seed:
                                 if worm['status'] == 'successful':
                                     if not worm['on_market']:
                                         if worm['type'] == 'legendary':
-                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':int(self.price_legendary_worm * 1000000000)}, type=f"Worm {worm['type']}")
+                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':self.price_legendary_worm * 1000000000}, type=f"Worm {worm['type']}")
                                         elif worm['type'] == 'epic':
-                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':int(self.price_epic_worm * 1000000000)}, type=f"Worm {worm['type']}")
+                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':self.price_epic_worm * 1000000000}, type=f"Worm {worm['type']}")
                                         elif worm['type'] == 'rare':
-                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':int(self.price_rare_worm * 1000000000)}, type=f"Worm {worm['type']}")
+                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':self.price_rare_worm * 1000000000}, type=f"Worm {worm['type']}")
                                     else:
-                                        if worm['type'] == 'legendary' and worm['price'] != int(self.price_legendary_worm * 1000000000):
-                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':int(self.price_legendary_worm * 1000000000)}, market_id=worm['market_id'], type=f"Worm {worm['type']}")
-                                        elif worm['type'] == 'epic' and worm['price'] != int(self.price_epic_worm * 1000000000):
-                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':int(self.price_epic_worm * 1000000000)}, market_id=worm['market_id'], type=f"Worm {worm['type']}")
-                                        elif worm['type'] == 'rare' and worm['price'] != int(self.price_rare_worm * 1000000000):
-                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':int(self.price_rare_worm * 1000000000)}, market_id=worm['market_id'], type=f"Worm {worm['type']}")
+                                        if worm['type'] == 'legendary' and worm['price'] != self.price_legendary_worm * 1000000000:
+                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':self.price_legendary_worm * 1000000000}, market_id=worm['market_id'], type=f"Worm {worm['type']}")
+                                        elif worm['type'] == 'epic' and worm['price'] != self.price_epic_worm * 1000000000:
+                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':self.price_epic_worm * 1000000000}, market_id=worm['market_id'], type=f"Worm {worm['type']}")
+                                        elif worm['type'] == 'rare' and worm['price'] != self.price_rare_worm * 1000000000:
+                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':self.price_rare_worm * 1000000000}, market_id=worm['market_id'], type=f"Worm {worm['type']}")
         except ClientResponseError as e:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Me Worms: {str(e)} ]{Style.RESET_ALL}")
         except Exception as e:
@@ -253,10 +253,10 @@ class Seed:
                             if id == self.telegram_id:
                                 if egg['status'] == 'in-inventory':
                                     if egg['type'] == 'common':
-                                        await self.add_market_item(query=query, payload={'egg_id':egg['id'],'price':int(self.price_common_egg * 1000000000)}, type=f"Egg {egg['type']}")
+                                        await self.add_market_item(query=query, payload={'egg_id':egg['id'],'price':self.price_common_egg * 1000000000}, type=f"Egg {egg['type']}")
                                 elif egg['status'] == 'on-market':
-                                    if egg['price'] != int(self.price_common_egg * 1000000000):
-                                        await self.cancel_market_item(query=query, payload={'egg_id':egg['id'],'price':int(self.price_common_egg * 1000000000)}, market_id=egg['market_id'], type=f"Egg {egg['type']}")
+                                    if egg['price'] != self.price_common_egg * 1000000000:
+                                        await self.cancel_market_item(query=query, payload={'egg_id':egg['id'],'price':self.price_common_egg * 1000000000}, market_id=egg['market_id'], type=f"Egg {egg['type']}")
                             else:
                                 await self.egg_transfer(query=query, egg_id=egg['id'])
         except ClientResponseError as e:
