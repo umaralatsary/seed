@@ -767,15 +767,15 @@ class Seed:
                                 answers = await self.answers()
                                 if answers is not None:
                                     answer = answers['seed']['youtube'][task['name']]
-                                    await self.tasks(query=query, task_id=task['id'], payload={'answer':answer})
+                                    await self.tasks(query=query, task_id=task['id'], task_name=task['name'], payload={'answer':answer})
                             else:
-                                await self.tasks(query=query, task_id=task['id'], payload={})
+                                await self.tasks(query=query, task_id=task['id'], task_name=task['name'], payload={})
         except ClientResponseError as e:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Progresses Tasks: {str(e)} ]{Style.RESET_ALL}")
         except Exception as e:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Progresses Tasks: {str(e)} ]{Style.RESET_ALL}")
 
-    async def tasks(self, query: str, task_id: str, payload: dict):
+    async def tasks(self, query: str, task_id: str, task_name: str, payload: dict):
         url = f'https://elb.seeddao.org/api/v1/tasks/{task_id}'
         data = json.dumps(payload)
         headers = {
@@ -786,9 +786,9 @@ class Seed:
         }
         try:
             async with ClientSession(timeout=ClientTimeout(total=20)) as session:
-                async with session.post(url=url, headers=headers) as response:
+                async with session.post(url=url, headers=headers, data=data) as response:
                     response.raise_for_status()
-                    return None
+                    return self.print_timestamp(f"{Fore.YELLOW + Style.BRIGHT}[ If {task_name} Still Appear In Next Restart, You Must Complete Manually ]{Style.RESET_ALL}")
         except (Exception, ClientResponseError):
             return None
 
