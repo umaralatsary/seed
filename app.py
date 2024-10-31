@@ -740,6 +740,16 @@ class Seed:
         except Exception as e:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Complete Bird Hunt: {str(e)} ]{Style.RESET_ALL}")
 
+    async def answers(self):
+        url = 'https://raw.githubusercontent.com/Shyzg/answer/refs/heads/main/answer.json'
+        try:
+            async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                async with session.get(url=url, ssl=False) as response:
+                    response.raise_for_status()
+                    return json.loads(await response.text())
+        except (Exception, ClientResponseError):
+            return None
+
     async def progresses_tasks(self, query: str):
         url = 'https://elb.seeddao.org/api/v1/tasks/progresses'
         headers = {
@@ -753,27 +763,34 @@ class Seed:
                     progresses_tasks = await response.json()
                     for task in progresses_tasks['data']:
                         if task['task_user'] is None or not task['task_user']['completed']:
-                            self.print_timestamp(f"{Fore.YELLOW + Style.BRIGHT}[ {task['name']} Isn\'t Complete ]{Style.RESET_ALL}")
-                            await self.tasks(query=query, task_id=task['id'])
+                            if task['type'] == 'academy':
+                                answers = await self.answers()
+                                if answers is not None:
+                                    answer = answers['seed']['youtube'][task['name']]
+                                    await self.tasks(query=query, task_id=task['id'], payload={'answer':answer})
+                            else:
+                                await self.tasks(query=query, task_id=task['id'], payload={})
         except ClientResponseError as e:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Progresses Tasks: {str(e)} ]{Style.RESET_ALL}")
         except Exception as e:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Progresses Tasks: {str(e)} ]{Style.RESET_ALL}")
 
-    async def tasks(self, query: str, task_id: str):
+    async def tasks(self, query: str, task_id: str, payload: dict):
         url = f'https://elb.seeddao.org/api/v1/tasks/{task_id}'
+        data = json.dumps(payload)
         headers = {
             **self.headers,
-            'Content-Length': '0',
+            'Content-Length': str(len(data)),
+            'Content-Type': 'text/plain;charset=UTF-8',
             'telegram-data': query
         }
         try:
             async with ClientSession(timeout=ClientTimeout(total=20)) as session:
                 async with session.post(url=url, headers=headers) as response:
                     response.raise_for_status()
-                    return True
+                    return None
         except (Exception, ClientResponseError):
-            return False
+            return None
 
     async def detail_member_guild(self, query: str):
         url = 'https://elb.seeddao.org/api/v1/guild/member/detail'
@@ -868,14 +885,6 @@ class Seed:
 
                 for (query, name, id) in accounts:
                     self.print_timestamp(
-                        f"{Fore.WHITE + Style.BRIGHT}[ Home/Is Leader ]{Style.RESET_ALL}"
-                        f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
-                        f"{Fore.CYAN + Style.BRIGHT}[ {name} ]{Style.RESET_ALL}"
-                    )
-                    await self.is_leader_bird(query=query)
-
-                for (query, name, id) in accounts:
-                    self.print_timestamp(
                         f"{Fore.WHITE + Style.BRIGHT}[ Earn ]{Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
                         f"{Fore.CYAN + Style.BRIGHT}[ {name} ]{Style.RESET_ALL}"
@@ -883,6 +892,14 @@ class Seed:
                     await self.login_bonuses(query=query)
                     await self.get_streak_reward(query=query)
                     await self.progresses_tasks(query=query)
+
+                for (query, name, id) in accounts:
+                    self.print_timestamp(
+                        f"{Fore.WHITE + Style.BRIGHT}[ Home/Is Leader ]{Style.RESET_ALL}"
+                        f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
+                        f"{Fore.CYAN + Style.BRIGHT}[ {name} ]{Style.RESET_ALL}"
+                    )
+                    await self.is_leader_bird(query=query)
 
                 if os.getenv('AUTO_UPGRADE'):
                     for (query, name, id) in accounts:
