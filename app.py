@@ -18,19 +18,12 @@ from telethon.types import (
     InputBotAppShortName,
     AppWebViewResultUrl
 )
+from dotenv import load_dotenv
 from urllib.parse import unquote
 import asyncio, json, os, sys
 
 class Seed:
     def __init__(self) -> None:
-        config = json.load(open('config.json', 'r'))
-        self.api_id = int(config['api_id'])
-        self.api_hash = config['api_hash']
-        self.id_telegram_primary_account = int(config['id_telegram_primary_account'])
-        self.price_common_egg=config['price_common_egg']
-        self.price_legendary_worm=config['price_legendary_worm']
-        self.price_epic_worm=config['price_epic_worm']
-        self.price_rare_worm=config['price_rare_worm']
         self.headers = {
             'Accept': '*/*',
             'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
@@ -44,6 +37,11 @@ class Seed:
             'Sec-Fetch-Site': 'same-site',
             'User-Agent': FakeUserAgent().random
         }
+        self.telegram_id = int(os.getenv('TELEGRAM_ID'))
+        self.price_common_egg=os.getenv('PRICE_COMMON_EGG')
+        self.price_legendary_worm=os.getenv('PRICE_LEGENDARY_WORM')
+        self.price_epic_worm=os.getenv('PRICE_EPIC_WORM')
+        self.price_rare_worm=os.getenv('PRICE_RARE_WORM')
 
     def clear_terminal(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -58,12 +56,12 @@ class Seed:
 
     async def generate_query(self, session: str):
         try:
-            client = TelegramClient(session=f'sessions/{session}', api_id=self.api_id, api_hash=self.api_hash)
+            client = TelegramClient(session=f'sessions/{session}', api_id=int(os.getenv('API_ID')), api_hash=os.getenv('API_HASH'))
             try:
                 if not client.is_connected():
                     await client.connect()
-            except (AuthKeyUnregisteredError, UnauthorizedError, UserDeactivatedBanError, UserDeactivatedError) as e:
-                raise e
+            except (AuthKeyUnregisteredError, UnauthorizedError, UserDeactivatedBanError, UserDeactivatedError) as error:
+                raise error
 
             me = await client.get_me()
             first_name = me.first_name if me.first_name is not None else me.username
@@ -218,7 +216,7 @@ class Seed:
                     me_worms = await response.json()
                     if me_worms['data']['items']:
                         for worm in me_worms['data']['items']:
-                            if id != self.id_telegram_primary_account:
+                            if id != self.telegram_id:
                                 if worm['status'] == 'successful':
                                     if not worm['on_market']:
                                         if worm['type'] == 'legendary':
@@ -252,7 +250,7 @@ class Seed:
                     me_egg = await response.json()
                     if me_egg['data']['items']:
                         for egg in me_egg['data']['items']:
-                            if id == self.id_telegram_primary_account:
+                            if id == self.telegram_id:
                                 if egg['status'] == 'in-inventory':
                                     if egg['type'] == 'common':
                                         await self.add_market_item(query=query, payload={'egg_id':egg['id'],'price':int(self.price_common_egg * 1000000000)}, type=f"Egg {egg['type']}")
@@ -278,11 +276,9 @@ class Seed:
                     response.raise_for_status()
                     spin_ticket = await response.json()
                     for spin in spin_ticket['data']:
-                        self.print_timestamp(f"{Fore.YELLOW + Style.BRIGHT}[ Ticket {spin['id']} ]{Style.RESET_ALL}")
                         await self.spin_reward(query=query, ticket_id=spin['id'])
                         await asyncio.sleep(2)
-                    if id != self.id_telegram_primary_account:
-                        await self.egg_piece(query=query, id=id)
+                    if id != self.telegram_id: await self.egg_piece(query=query, id=id)
         except ClientResponseError as e:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Spin Ticket: {str(e)} ]{Style.RESET_ALL}")
         except Exception as e:
@@ -330,7 +326,8 @@ class Seed:
                         if len(batch) == 5:
                             payload = {'egg_piece_ids':batch}
                             await self.egg_piece_merge(query=query, payload=payload)
-                    await self.me_egg(query=query, id=id)
+                    if os.getenv('AUTO_SELL_TRANSFER_EGG'):
+                        await self.me_egg(query=query, id=id)
         except ClientResponseError as e:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Egg Piece: {str(e)} ]{Style.RESET_ALL}")
         except Exception as e:
@@ -365,7 +362,7 @@ class Seed:
 
     async def egg_transfer(self, query: str, egg_id: str):
         url = 'https://elb.seeddao.org/api/v1/transfer/egg'
-        data = json.dumps({'telegram_id':self.id_telegram_primary_account,'egg_id':egg_id,'max_fee':2000000000})
+        data = json.dumps({'telegram_id':self.telegram_id,'egg_id':egg_id,'max_fee':2000000000})
         headers = {
             **self.headers,
             'Content-Length': str(len(data)),
@@ -863,8 +860,10 @@ class Seed:
                         else:
                             restart_times.append(datetime.fromisoformat(worms['data']['created_at'].replace('Z', '+00:00')).astimezone().timestamp())
                             self.print_timestamp(f"{Fore.YELLOW + Style.BRIGHT}[ Next Worms Can Be Catch At {datetime.fromisoformat(worms['data']['created_at'].replace('Z', '+00:00')).astimezone().strftime('%x %X %Z')} ]{Style.RESET_ALL}")
-                    await self.me_worms(query=query, id=id)
-                    await self.me_egg(query=query, id=id)
+                    if os.getenv('AUTO_SELL_TRANSFER_EGG'):
+                        await self.me_egg(query=query, id=id)
+                    if os.getenv('AUTO_SELL_WORMS'):
+                        await self.me_worms(query=query, id=id)
 
                 for (query, name, id) in accounts:
                     self.print_timestamp(
@@ -884,22 +883,24 @@ class Seed:
                     await self.get_streak_reward(query=query)
                     await self.progresses_tasks(query=query)
 
-                for (query, name, id) in accounts:
-                    self.print_timestamp(
-                        f"{Fore.WHITE + Style.BRIGHT}[ Boost ]{Style.RESET_ALL}"
-                        f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
-                        f"{Fore.CYAN + Style.BRIGHT}[ {name} ]{Style.RESET_ALL}"
-                    )
-                    await self.upgrade_mining_seed(query=query)
-                    await self.upgrade_storage_size(query=query)
+                if os.getenv('AUTO_UPGRADE'):
+                    for (query, name, id) in accounts:
+                        self.print_timestamp(
+                            f"{Fore.WHITE + Style.BRIGHT}[ Boost ]{Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
+                            f"{Fore.CYAN + Style.BRIGHT}[ {name} ]{Style.RESET_ALL}"
+                        )
+                        await self.upgrade_mining_seed(query=query)
+                        await self.upgrade_storage_size(query=query)
 
-                for (query, name, id) in accounts:
-                    self.print_timestamp(
-                        f"{Fore.WHITE + Style.BRIGHT}[ Spin/Merge Egg/Send Egg ]{Style.RESET_ALL}"
-                        f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
-                        f"{Fore.CYAN + Style.BRIGHT}[ {name} ]{Style.RESET_ALL}"
-                    )
-                    await self.spin_ticket(query=query, id=id)
+                if os.getenv('AUTO_SPIN'):
+                    for (query, name, id) in accounts:
+                        self.print_timestamp(
+                            f"{Fore.WHITE + Style.BRIGHT}[ Spin & Merge Egg ]{Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
+                            f"{Fore.CYAN + Style.BRIGHT}[ {name} ]{Style.RESET_ALL}"
+                        )
+                        await self.spin_ticket(query=query, id=id)
 
                 for (query, name, id) in accounts:
                     await self.detail_member_guild(query=query)
@@ -932,7 +933,10 @@ if __name__ == '__main__':
     try:
         if hasattr(asyncio, 'WindowsSelectorEventLoopPolicy'):
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
         init(autoreset=True)
+        load_dotenv()
+
         seed = Seed()
         asyncio.run(seed.main())
     except (ValueError, IndexError, FileNotFoundError) as e:
