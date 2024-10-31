@@ -38,10 +38,10 @@ class Seed:
             'User-Agent': FakeUserAgent().random
         }
         self.telegram_id = int(os.getenv('TELEGRAM_ID'))
-        self.price_common_egg=os.getenv('PRICE_COMMON_EGG')
-        self.price_legendary_worm=os.getenv('PRICE_LEGENDARY_WORM')
-        self.price_epic_worm=os.getenv('PRICE_EPIC_WORM')
-        self.price_rare_worm=os.getenv('PRICE_RARE_WORM')
+        self.price_common_egg=int(os.getenv('PRICE_COMMON_EGG'))
+        self.price_legendary_worm=int(os.getenv('PRICE_LEGENDARY_WORM'))
+        self.price_epic_worm=int(os.getenv('PRICE_EPIC_WORM'))
+        self.price_rare_worm=int(os.getenv('PRICE_RARE_WORM'))
 
     def clear_terminal(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -278,7 +278,8 @@ class Seed:
                     for spin in spin_ticket['data']:
                         await self.spin_reward(query=query, ticket_id=spin['id'])
                         await asyncio.sleep(2)
-                    if id != self.telegram_id: await self.egg_piece(query=query, id=id)
+                    if id != self.telegram_id:
+                        await self.egg_piece(query=query, id=id)
         except ClientResponseError as e:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Spin Ticket: {str(e)} ]{Style.RESET_ALL}")
         except Exception as e:
@@ -936,7 +937,6 @@ if __name__ == '__main__':
 
         init(autoreset=True)
         load_dotenv()
-        sys.set_int_max_str_digits(1000000000)
 
         seed = Seed()
         asyncio.run(seed.main())
