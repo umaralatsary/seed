@@ -37,7 +37,7 @@ class Seed:
             'Sec-Fetch-Site': 'same-site',
             'User-Agent': FakeUserAgent().random
         }
-        self.telegram_id = int(os.getenv('TELEGRAM_ID'))
+        self.telegram_id = os.getenv('TELEGRAM_ID')
         self.price_common_egg=int(os.getenv('PRICE_COMMON_EGG'))
         self.price_legendary_worm=int(os.getenv('PRICE_LEGENDARY_WORM'))
         self.price_epic_worm=int(os.getenv('PRICE_EPIC_WORM'))
