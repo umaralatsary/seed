@@ -936,6 +936,7 @@ if __name__ == '__main__':
 
         init(autoreset=True)
         load_dotenv()
+        sys.set_int_max_str_digits()
 
         seed = Seed()
         asyncio.run(seed.main())
