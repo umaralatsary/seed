@@ -19,7 +19,7 @@ from telethon.types import (
     AppWebViewResultUrl
 )
 from urllib.parse import unquote
-from bot.config.config import settings
+from config import settings
 import asyncio, json, os, sys
 
 class Seed:
