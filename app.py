@@ -38,10 +38,12 @@ class Seed:
             'User-Agent': FakeUserAgent().random
         }
 
-    def clear_terminal(self):
+    @staticmethod
+    def clear_terminal():
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    def print_timestamp(self, message):
+    @staticmethod
+    def print_timestamp(message):
         print(
             f"{Fore.BLUE + Style.BRIGHT}[ {datetime.now().astimezone().strftime('%x %X %Z')} ]{Style.RESET_ALL}"
             f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
@@ -55,12 +57,12 @@ class Seed:
                 try:
                     if not client.is_connected():
                         await client.connect()
-                except (AuthKeyUnregisteredError, UnauthorizedError, UserDeactivatedBanError, UserDeactivatedError) as error:
-                    raise error
+                except (AuthKeyUnregisteredError, UnauthorizedError, UserDeactivatedBanError, UserDeactivatedError) as err:
+                    raise err
 
                 me = await client.get_me()
                 first_name = me.first_name if me.first_name is not None else me.username
-                id = me.id
+                telegram_id = me.id
 
                 if me.last_name is None or not '🌱SEED' in me.last_name: await client(account.UpdateProfileRequest(last_name='🌱SEED'))
 
@@ -76,10 +78,10 @@ class Seed:
                 if client.is_connected():
                     await client.disconnect()
 
-                return (query, first_name, id)
-        except Exception as error:
+                return query, first_name, telegram_id
+        except Exception as err:
             await client.disconnect()
-            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ {session} Unexpected Error While Generating Query With Telethon: {str(error)} ]{Style.RESET_ALL}")
+            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ {session} Unexpected Error While Generating Query With Telethon: {str(err)} ]{Style.RESET_ALL}")
             return None
 
     async def generate_queries(self, sessions):
@@ -115,10 +117,10 @@ class Seed:
                     profile2 = await response.json()
                     if not profile2['data']['give_first_egg']:
                         return await self.give_first_egg(query=query)
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Profile: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Profile: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Profile: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Profile: {str(err)} ]{Style.RESET_ALL}")
 
     async def give_first_egg(self, query: str):
         url = 'https://elb.seeddao.org/api/v1/give-first-egg'
@@ -137,10 +139,10 @@ class Seed:
                     if give_first_egg['data']['status'] == 'in-inventory':
                         self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ You\'ve Got {give_first_egg['data']['type']} From Give First Egg ]{Style.RESET_ALL}")
                         return await self.complete_egg_hatch(query=query, egg_id=give_first_egg['data']['id'])
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Give First Egg: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Give First Egg: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Give First Egg: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Give First Egg: {str(err)} ]{Style.RESET_ALL}")
 
     async def balance_profile(self, query: str):
         url = 'https://elb.seeddao.org/api/v1/profile/balance'
@@ -153,11 +155,11 @@ class Seed:
                 async with session.get(url=url, headers=headers) as response:
                     response.raise_for_status()
                     return await response.json()
-        except ClientResponseError as error:
-            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Profile Balance: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Profile Balance: {str(err)} ]{Style.RESET_ALL}")
             return None
-        except Exception as error:
-            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Profile Balance: {str(error)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Profile Balance: {str(err)} ]{Style.RESET_ALL}")
             return None
 
     async def upgrade_mining_seed(self, query: str):
@@ -174,10 +176,10 @@ class Seed:
                         return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ Not Enough Seed To Upgrade Mining Seed ]{Style.RESET_ALL}")
                     response.raise_for_status()
                     return self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ Successfully Upgrade Mining Seed ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Upgrade Mining Seed: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Upgrade Mining Seed: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Upgrade Mining Seed: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Upgrade Mining Seed: {str(err)} ]{Style.RESET_ALL}")
 
     async def upgrade_storage_size(self, query: str):
         url = 'https://elb.seeddao.org/api/v1/seed/storage-size/upgrade'
@@ -193,12 +195,12 @@ class Seed:
                         return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ Not Enough Seed To Upgrade Storage Size ]{Style.RESET_ALL}")
                     response.raise_for_status()
                     return self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ Successfully Upgrade Storage Size ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Upgrade Storage Size: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Upgrade Storage Size: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Upgrade Storage Size: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Upgrade Storage Size: {str(err)} ]{Style.RESET_ALL}")
 
-    async def me_worms(self, query: str, id: int):
+    async def me_worms(self, query: str, telegram_id: int):
         url = 'https://elb.seeddao.org/api/v1/worms/me?page=1'
         headers = {
             **self.headers,
@@ -211,28 +213,28 @@ class Seed:
                     me_worms = await response.json()
                     if me_worms['data']['items']:
                         for worm in me_worms['data']['items']:
-                            if id != settings.TELEGRAM_ID:
+                            if telegram_id != settings.TELEGRAM_ID:
                                 if worm['status'] == 'successful':
                                     if not worm['on_market']:
                                         if worm['type'] == 'legendary':
-                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_LEGENDARY_WORM * 1000000000}, type=f"Worm {worm['type']}")
+                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_LEGENDARY_WORM * 1000000000}, item_type=f"Worm {worm['type']}")
                                         elif worm['type'] == 'epic':
-                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_EPIC_WORM * 1000000000}, type=f"Worm {worm['type']}")
+                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_EPIC_WORM * 1000000000}, item_type=f"Worm {worm['type']}")
                                         elif worm['type'] == 'rare':
-                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_RARE_WORM * 1000000000}, type=f"Worm {worm['type']}")
+                                            await self.add_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_RARE_WORM * 1000000000}, item_type=f"Worm {worm['type']}")
                                     else:
                                         if worm['type'] == 'legendary' and worm['price'] != settings.PRICE_LEGENDARY_WORM * 1000000000:
-                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_LEGENDARY_WORM * 1000000000}, market_id=worm['market_id'], type=f"Worm {worm['type']}")
+                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_LEGENDARY_WORM * 1000000000}, market_id=worm['market_id'], item_type=f"Worm {worm['type']}")
                                         elif worm['type'] == 'epic' and worm['price'] != settings.PRICE_EPIC_WORM * 1000000000:
-                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_EPIC_WORM * 1000000000}, market_id=worm['market_id'], type=f"Worm {worm['type']}")
+                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_EPIC_WORM * 1000000000}, market_id=worm['market_id'], item_type=f"Worm {worm['type']}")
                                         elif worm['type'] == 'rare' and worm['price'] != settings.PRICE_RARE_WORM * 1000000000:
-                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_RARE_WORM * 1000000000}, market_id=worm['market_id'], type=f"Worm {worm['type']}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Me Worms: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Me Worms: {str(error)} ]{Style.RESET_ALL}")
+                                            await self.cancel_market_item(query=query, payload={'worm_id':worm['id'],'price':settings.PRICE_RARE_WORM * 1000000000}, market_id=worm['market_id'], item_type=f"Worm {worm['type']}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Me Worms: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Me Worms: {str(err)} ]{Style.RESET_ALL}")
 
-    async def me_egg(self, query: str, id: int):
+    async def me_egg(self, query: str, telegram_id: int):
         url = 'https://elb.seeddao.org/api/v1/egg/me?page=1'
         headers = {
             **self.headers,
@@ -245,21 +247,21 @@ class Seed:
                     me_egg = await response.json()
                     if me_egg['data']['items']:
                         for egg in me_egg['data']['items']:
-                            if id == settings.TELEGRAM_ID:
+                            if telegram_id == settings.TELEGRAM_ID:
                                 if egg['status'] == 'in-inventory':
                                     if egg['type'] == 'common':
-                                        await self.add_market_item(query=query, payload={'egg_id':egg['id'],'price':settings.PRICE_COMMON_EGG * 1000000000}, type=f"Egg {egg['type']}")
+                                        await self.add_market_item(query=query, payload={'egg_id':egg['id'],'price':settings.PRICE_COMMON_EGG * 1000000000}, item_type=f"Egg {egg['type']}")
                                 elif egg['status'] == 'on-market':
                                     if egg['price'] != settings.PRICE_COMMON_EGG * 1000000000:
-                                        await self.cancel_market_item(query=query, payload={'egg_id':egg['id'],'price':settings.PRICE_COMMON_EGG * 1000000000}, market_id=egg['market_id'], type=f"Egg {egg['type']}")
+                                        await self.cancel_market_item(query=query, payload={'egg_id':egg['id'],'price':settings.PRICE_COMMON_EGG * 1000000000}, market_id=egg['market_id'], item_type=f"Egg {egg['type']}")
                             else:
                                 await self.egg_transfer(query=query, egg_id=egg['id'])
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Me Egg: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Me Egg: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Me Egg: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Me Egg: {str(err)} ]{Style.RESET_ALL}")
 
-    async def spin_ticket(self, query: str, id=id):
+    async def spin_ticket(self, query: str, telegram_id: int):
         url = 'https://elb.seeddao.org/api/v1/spin-ticket'
         headers = {
             **self.headers,
@@ -274,11 +276,11 @@ class Seed:
                         await self.spin_reward(query=query, ticket_id=spin['id'])
                         await asyncio.sleep(2)
                     if id != settings.TELEGRAM_ID:
-                        await self.egg_piece(query=query, id=id)
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Spin Ticket: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Spin Ticket: {str(error)} ]{Style.RESET_ALL}")
+                        await self.egg_piece(query=query, telegram_id=telegram_id)
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Spin Ticket: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Spin Ticket: {str(err)} ]{Style.RESET_ALL}")
 
     async def spin_reward(self, query: str, ticket_id: str):
         url = 'https://elb.seeddao.org/api/v1/spin-reward'
@@ -300,12 +302,12 @@ class Seed:
                     spin_reward = await response.json()
                     if spin_reward['data']['status'] == 'received':
                         return self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ You\'ve Got {spin_reward['data']['type']} From Spin Reward ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Spin Reward: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Spin Reward: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Spin Reward: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Spin Reward: {str(err)} ]{Style.RESET_ALL}")
 
-    async def egg_piece(self, query: str, id=id):
+    async def egg_piece(self, query: str, telegram_id: int):
         url = 'https://elb.seeddao.org/api/v1/egg-piece'
         headers = {
             **self.headers,
@@ -323,11 +325,11 @@ class Seed:
                             payload = {'egg_piece_ids':batch}
                             await self.egg_piece_merge(query=query, payload=payload)
                     if os.getenv('AUTO_SELL_TRANSFER_EGG') == 'True':
-                        await self.me_egg(query=query, id=id)
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Egg Piece: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Egg Piece: {str(error)} ]{Style.RESET_ALL}")
+                        await self.me_egg(query=query, telegram_id=telegram_id)
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Egg Piece: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Egg Piece: {str(err)} ]{Style.RESET_ALL}")
 
     async def egg_piece_merge(self, query: str, payload: dict):
         url = 'https://elb.seeddao.org/api/v1/egg-piece-merge'
@@ -351,10 +353,10 @@ class Seed:
                     egg_piece_merge = await response.json()
                     if egg_piece_merge['data']['status'] == 'in-inventory':
                         return self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ Successfully Egg Piece Merge {egg_piece_merge['data']['type']} ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Egg Piece Merge: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Egg Piece Merge: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Egg Piece Merge: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Egg Piece Merge: {str(err)} ]{Style.RESET_ALL}")
 
     async def egg_transfer(self, query: str, egg_id: str):
         url = 'https://elb.seeddao.org/api/v1/transfer/egg'
@@ -375,10 +377,10 @@ class Seed:
                     response.raise_for_status()
                     egg_transfer = await response.json()
                     return self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ You ({egg_transfer['data']['created_by']}) Have Successfully Transfer {egg_transfer['data']['egg_type']} Egg To {egg_transfer['data']['received_by']} ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Egg Transfer: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Egg Transfer: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Egg Transfer: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Egg Transfer: {str(err)} ]{Style.RESET_ALL}")
 
     async def complete_egg_hatch(self, query: str, egg_id: str):
         url = 'https://elb.seeddao.org/api/v1/egg-hatch/complete'
@@ -398,12 +400,12 @@ class Seed:
                     complete_egg_hatch = await response.json()
                     if complete_egg_hatch['data']['status'] == 'in-inventory':
                         return self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ You\'ve Got {complete_egg_hatch['data']['type']} From Egg Hatch ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Complete Egg Hatch: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Complete Egg Hatch: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Complete Egg Hatch: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Complete Egg Hatch: {str(err)} ]{Style.RESET_ALL}")
 
-    async def add_market_item(self, query: str, payload: dict, type: str):
+    async def add_market_item(self, query: str, payload: dict, item_type: str):
         url = 'https://elb.seeddao.org/api/v1/market-item/add'
         data = json.dumps(payload)
         headers = {
@@ -423,16 +425,16 @@ class Seed:
                     add_market_item = await response.json()
                     if add_market_item['data']['status'] == 'on-sale':
                         return self.print_timestamp(
-                            f"{Fore.GREEN + Style.BRIGHT}[ Successfully Add {type} To Market ]{Style.RESET_ALL}"
+                            f"{Fore.GREEN + Style.BRIGHT}[ Successfully Add {item_type} To Market ]{Style.RESET_ALL}"
                             f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
                             f"{Fore.YELLOW + Style.BRIGHT}[ Price Net {add_market_item['data']['price_net'] / 1000000000} ]{Style.RESET_ALL}"
                         )
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Add Market Item: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Add Market Item: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Add Market Item: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Add Market Item: {str(err)} ]{Style.RESET_ALL}")
 
-    async def cancel_market_item(self, query: str, payload: dict, market_id: str, type: str):
+    async def cancel_market_item(self, query: str, payload: dict, market_id: str, item_type: str):
         url = f'https://elb.seeddao.org/api/v1/market-item/{market_id}/cancel'
         data = json.dumps({'id':market_id})
         headers = {
@@ -445,11 +447,11 @@ class Seed:
             async with ClientSession(timeout=ClientTimeout(total=20)) as session:
                 async with session.post(url=url, headers=headers, data=data) as response:
                     response.raise_for_status()
-                    return await self.add_market_item(query=query, payload=payload, type=type)
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Add Market Item: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Add Market Item: {str(error)} ]{Style.RESET_ALL}")
+                    return await self.add_market_item(query=query, payload=payload, item_type=item_type)
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Add Market Item: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Add Market Item: {str(err)} ]{Style.RESET_ALL}")
 
     async def login_bonuses(self, query: str):
         url = 'https://elb.seeddao.org/api/v1/login-bonuses'
@@ -470,10 +472,10 @@ class Seed:
                         f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
                         f"{Fore.YELLOW + Style.BRIGHT}[ Day {login_bonuses['data']['no']} ]{Style.RESET_ALL}"
                     )
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Login Bonuses: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Login Bonuses: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Login Bonuses: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Login Bonuses: {str(err)} ]{Style.RESET_ALL}")
 
     async def get_streak_reward(self, query: str):
         url = 'https://elb.seeddao.org/api/v1/streak-reward'
@@ -490,10 +492,10 @@ class Seed:
                         for data in streak_reward['data']:
                             if data['status'] == 'created':
                                 await self.streak_reward(query=query, streak_reward_ids=data['id'])
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Streak Reward: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Streak Reward: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Streak Reward: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Streak Reward: {str(err)} ]{Style.RESET_ALL}")
 
     async def streak_reward(self, query: str, streak_reward_ids: str):
         url = 'https://elb.seeddao.org/api/v1/streak-reward'
@@ -514,10 +516,10 @@ class Seed:
                     for data in streak_reward['data']:
                         if data['status'] == 'received':
                             self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ You\'ve Claimed Streak Reward ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Streak Reward: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Streak Reward: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Streak Reward: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Streak Reward: {str(err)} ]{Style.RESET_ALL}")
 
     async def worms(self, query: str):
         url = 'https://elb.seeddao.org/api/v1/worms'
@@ -530,11 +532,11 @@ class Seed:
                 async with session.get(url=url, headers=headers) as response:
                     response.raise_for_status()
                     return await response.json()
-        except ClientResponseError as error:
-            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Worms: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Worms: {str(err)} ]{Style.RESET_ALL}")
             return None
-        except Exception as error:
-            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Worms: {str(error)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Worms: {str(err)} ]{Style.RESET_ALL}")
             return None
 
     async def catch_worms(self, query: str):
@@ -567,10 +569,10 @@ class Seed:
                         )
                     elif catch_worms['data']['status'] == 'failed':
                         return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ Failed To Catch {catch_worms['data']['type']} Worms ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Catch Worms: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Catch Worms: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Catch Worms: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Catch Worms: {str(err)} ]{Style.RESET_ALL}")
 
     async def claim_seed(self, query: str):
         url = 'https://elb.seeddao.org/api/v1/seed/claim'
@@ -587,10 +589,10 @@ class Seed:
                     response.raise_for_status()
                     claim_seed = await response.json()
                     return self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ You\'ve Got {claim_seed['data']['amount'] / 1000000000} From Seeding ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Claim Seed: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Claim Seed: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Claim Seed: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Claim Seed: {str(err)} ]{Style.RESET_ALL}")
 
     async def is_leader_bird(self, query: str):
         url = 'https://elb.seeddao.org/api/v1/bird/is-leader'
@@ -614,11 +616,11 @@ class Seed:
                             await self.me_all_worms(query=query, bird_id=is_leader_bird['data']['id'], task_level=is_leader_bird['data']['task_level'])
                         elif is_leader_bird['data']['happiness_level'] >= 10000 and is_leader_bird['data']['energy_level'] >= is_leader_bird['data']['energy_max']:
                             await self.start_bird_hunt(query=query, bird_id=is_leader_bird['data']['id'], task_level=is_leader_bird['data']['task_level'])
-        except ClientResponseError as error:
-            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Is Leader Bird: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Is Leader Bird: {str(err)} ]{Style.RESET_ALL}")
             return None
-        except Exception as error:
-            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Is Leader Bird: {str(error)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Is Leader Bird: {str(err)} ]{Style.RESET_ALL}")
             return None
 
     async def me_all_worms(self, query: str, bird_id: str, task_level: int):
@@ -637,10 +639,10 @@ class Seed:
                             if data['status'] == 'successful' and (data['type'] == 'common' or data['type'] == 'uncommon'):
                                 await self.bird_feed(query=query, bird_id=bird_id, worm_ids=data['id'])
                         return await self.start_bird_hunt(query=query, bird_id=bird_id, task_level=task_level)
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Me All Worms: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Me All Worms: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Me All Worms: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Me All Worms: {str(err)} ]{Style.RESET_ALL}")
 
     async def bird_happiness(self, query: str, bird_id):
         url = 'https://elb.seeddao.org/api/v1/bird-happiness'
@@ -658,10 +660,10 @@ class Seed:
                     bird_happiness = await response.json()
                     if bird_happiness['data']['happiness_level'] >= 10000:
                         return self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ Your Bird Is Happy ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Bird Happiness: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Bird Happiness: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Bird Happiness: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Bird Happiness: {str(err)} ]{Style.RESET_ALL}")
 
     async def bird_feed(self, query: str, bird_id: str, worm_ids: str):
         url = 'https://elb.seeddao.org/api/v1/bird-feed'
@@ -681,10 +683,10 @@ class Seed:
                     bird_feed = await response.json()
                     if bird_feed['data']['energy_level'] <= bird_feed['data']['energy_max']:
                         return self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ Feed Bird Successfully ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Bird Feed: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Bird Feed: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Bird Feed: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Bird Feed: {str(err)} ]{Style.RESET_ALL}")
 
     async def start_bird_hunt(self, query: str, bird_id: str, task_level: int):
         url = 'https://elb.seeddao.org/api/v1/bird-hunt/start'
@@ -707,10 +709,10 @@ class Seed:
                         if datetime.now().astimezone() >= datetime.fromisoformat(start_bird_hunt['data']['hunt_end_at'].replace('Z', '+00:00')).astimezone():
                             return await self.complete_bird_hunt(query=query, bird_id=start_bird_hunt['data']['id'], task_level=start_bird_hunt['data']['task_level'])
                         return self.print_timestamp(f"{Fore.YELLOW + Style.BRIGHT}[ Bird Hunt Can Be Complete At {datetime.fromisoformat(start_bird_hunt['data']['hunt_end_at'].replace('Z', '+00:00')).astimezone().strftime('%x %X %Z')} ]{Style.RESET_ALL}")
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Start Bird Hunt: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Start Bird Hunt: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Start Bird Hunt: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Start Bird Hunt: {str(err)} ]{Style.RESET_ALL}")
 
     async def complete_bird_hunt(self, query: str, bird_id: str, task_level: int):
         url = 'https://elb.seeddao.org/api/v1/bird-hunt/complete'
@@ -730,12 +732,13 @@ class Seed:
                     complete_bird_hunt = await response.json()
                     self.print_timestamp(f"{Fore.GREEN + Style.BRIGHT}[ You\'ve Got {complete_bird_hunt['data']['seed_amount'] / 1000000000} From Bird Hunt ]{Style.RESET_ALL}")
                     return await self.is_leader_bird(query=query)
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Complete Bird Hunt: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Complete Bird Hunt: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Complete Bird Hunt: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Complete Bird Hunt: {str(err)} ]{Style.RESET_ALL}")
 
-    async def answers(self):
+    @staticmethod
+    async def answers():
         url = 'https://raw.githubusercontent.com/Shyzg/answer/refs/heads/main/answer.json'
         try:
             async with ClientSession(timeout=ClientTimeout(total=20)) as session:
@@ -765,10 +768,10 @@ class Seed:
                                     await self.tasks(query=query, task_id=task['id'], task_name=task['name'], payload={'answer':answer})
                             else:
                                 await self.tasks(query=query, task_id=task['id'], task_name=task['name'], payload={})
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Progresses Tasks: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Progresses Tasks: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Progresses Tasks: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Progresses Tasks: {str(err)} ]{Style.RESET_ALL}")
 
     async def tasks(self, query: str, task_id: str, task_name: str, payload: dict):
         url = f'https://elb.seeddao.org/api/v1/tasks/{task_id}'
@@ -802,10 +805,10 @@ class Seed:
                         return await self.join_guild(query=query, guild_id='b4480be6-0f4a-42d2-8f58-bc087daa33c3')
                     elif detail_member_guild['data']['guild_id'] != 'b4480be6-0f4a-42d2-8f58-bc087daa33c3':
                         return await self.leave_guild(query=query, guild_id=detail_member_guild['data']['guild_id'])
-        except ClientResponseError as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Detail Member Guild: {str(error)} ]{Style.RESET_ALL}")
-        except Exception as error:
-            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Detail Member Guild: {str(error)} ]{Style.RESET_ALL}")
+        except ClientResponseError as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Detail Member Guild: {str(err)} ]{Style.RESET_ALL}")
+        except Exception as err:
+            return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Detail Member Guild: {str(err)} ]{Style.RESET_ALL}")
 
     async def join_guild(self, query: str, guild_id: str):
         url = 'https://elb.seeddao.org/api/v1/guild/join'
@@ -851,7 +854,7 @@ class Seed:
                 total_balance = 0.0
                 restart_times = []
 
-                for (query, name, id) in accounts:
+                for (query, name, telegram_id) in accounts:
                     self.print_timestamp(
                         f"{Fore.WHITE + Style.BRIGHT}[ Home ]{Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
@@ -865,20 +868,17 @@ class Seed:
                         if datetime.now().astimezone() >= datetime.fromisoformat(worms['data']['created_at'].replace('Z', '+00:00')).astimezone():
                             if not worms['data']['is_caught']:
                                 await self.catch_worms(query=query)
-                                restart_times.append(datetime.fromisoformat(worms['data']['next_worm'].replace('Z', '+00:00')).astimezone().timestamp())
-                                self.print_timestamp(f"{Fore.YELLOW + Style.BRIGHT}[ Next Worms Can Be Catch At {datetime.fromisoformat(worms['data']['next_worm'].replace('Z', '+00:00')).astimezone().strftime('%x %X %Z')} ]{Style.RESET_ALL}")
-                            else:
-                                restart_times.append(datetime.fromisoformat(worms['data']['next_worm'].replace('Z', '+00:00')).astimezone().timestamp())
-                                self.print_timestamp(f"{Fore.YELLOW + Style.BRIGHT}[ Next Worms Can Be Catch At {datetime.fromisoformat(worms['data']['next_worm'].replace('Z', '+00:00')).astimezone().strftime('%x %X %Z')} ]{Style.RESET_ALL}")
+                            restart_times.append(datetime.fromisoformat(worms['data']['next_worm'].replace('Z', '+00:00')).astimezone().timestamp())
+                            self.print_timestamp(f"{Fore.YELLOW + Style.BRIGHT}[ Next Worms Can Be Catch At {datetime.fromisoformat(worms['data']['next_worm'].replace('Z', '+00:00')).astimezone().strftime('%x %X %Z')} ]{Style.RESET_ALL}")
                         else:
                             restart_times.append(datetime.fromisoformat(worms['data']['created_at'].replace('Z', '+00:00')).astimezone().timestamp())
                             self.print_timestamp(f"{Fore.YELLOW + Style.BRIGHT}[ Next Worms Can Be Catch At {datetime.fromisoformat(worms['data']['created_at'].replace('Z', '+00:00')).astimezone().strftime('%x %X %Z')} ]{Style.RESET_ALL}")
                     if os.getenv('AUTO_SELL_TRANSFER_EGG') == 'True':
-                        await self.me_egg(query=query, id=id)
+                        await self.me_egg(query=query, telegram_id=telegram_id)
                     if os.getenv('AUTO_SELL_WORMS') == 'True':
-                        await self.me_worms(query=query, id=id)
+                        await self.me_worms(query=query, telegram_id=telegram_id)
 
-                for (query, name, id) in accounts:
+                for (query, name, telegram_id) in accounts:
                     self.print_timestamp(
                         f"{Fore.WHITE + Style.BRIGHT}[ Earn ]{Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
@@ -888,7 +888,7 @@ class Seed:
                     await self.get_streak_reward(query=query)
                     await self.progresses_tasks(query=query)
 
-                for (query, name, id) in accounts:
+                for (query, name, telegram_id) in accounts:
                     self.print_timestamp(
                         f"{Fore.WHITE + Style.BRIGHT}[ Home/Is Leader ]{Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
@@ -897,7 +897,7 @@ class Seed:
                     await self.is_leader_bird(query=query)
 
                 if os.getenv('AUTO_UPGRADE') == 'True':
-                    for (query, name, id) in accounts:
+                    for (query, name, telegram_id) in accounts:
                         self.print_timestamp(
                             f"{Fore.WHITE + Style.BRIGHT}[ Boost ]{Style.RESET_ALL}"
                             f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
@@ -907,15 +907,15 @@ class Seed:
                         await self.upgrade_storage_size(query=query)
 
                 if os.getenv('AUTO_SPIN') == 'True':
-                    for (query, name, id) in accounts:
+                    for (query, name, telegram_id) in accounts:
                         self.print_timestamp(
                             f"{Fore.WHITE + Style.BRIGHT}[ Spin & Merge Egg ]{Style.RESET_ALL}"
                             f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
                             f"{Fore.CYAN + Style.BRIGHT}[ {name} ]{Style.RESET_ALL}"
                         )
-                        await self.spin_ticket(query=query, id=id)
+                        await self.spin_ticket(query=query, telegram_id=telegram_id)
 
-                for (query, name, id) in accounts:
+                for (query, name, telegram_id) in accounts:
                     await self.detail_member_guild(query=query)
                     balance_profile = await self.balance_profile(query=query)
                     total_balance += float(balance_profile['data'] / 1000000000) if balance_profile else 0.0
@@ -938,8 +938,8 @@ class Seed:
 
                 await asyncio.sleep(sleep_time)
                 self.clear_terminal()
-            except Exception as error:
-                self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ {str(error)} ]{Style.RESET_ALL}")
+            except Exception as err:
+                self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ {str(err)} ]{Style.RESET_ALL}")
                 continue
 
 if __name__ == '__main__':
@@ -955,6 +955,6 @@ if __name__ == '__main__':
         seed = Seed()
         asyncio.run(seed.main())
     except (ValueError, IndexError, FileNotFoundError) as error:
-        seed.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ {str(error)} ]{Style.RESET_ALL}")
+        print(f"{Fore.RED + Style.BRIGHT}[ {str(error)} ]{Style.RESET_ALL}", flush=True)
     except KeyboardInterrupt:
         sys.exit(0)
