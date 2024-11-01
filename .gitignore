@@ -4,7 +4,6 @@ __pycache__
 development
 venv
 .DS_Store
-*.json
 *.session
 .env
 !.env.example
