@@ -324,7 +324,7 @@ class Seed:
                         if len(batch) == 5:
                             payload = {'egg_piece_ids':batch}
                             await self.egg_piece_merge(query=query, payload=payload)
-                    if os.getenv('AUTO_SELL_TRANSFER_EGG') == 'True':
+                    if settings.AUTO_SELL_TRANSFER_EGG:
                         await self.me_egg(query=query, telegram_id=telegram_id)
         except ClientResponseError as err:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An HTTP Error Occurred While Fetching Egg Piece: {str(err)} ]{Style.RESET_ALL}")
@@ -873,9 +873,9 @@ class Seed:
                         else:
                             restart_times.append(datetime.fromisoformat(worms['data']['created_at'].replace('Z', '+00:00')).astimezone().timestamp())
                             self.print_timestamp(f"{Fore.YELLOW + Style.BRIGHT}[ Next Worms Can Be Catch At {datetime.fromisoformat(worms['data']['created_at'].replace('Z', '+00:00')).astimezone().strftime('%x %X %Z')} ]{Style.RESET_ALL}")
-                    if os.getenv('AUTO_SELL_TRANSFER_EGG') == 'True':
+                    if settings.AUTO_SELL_TRANSFER_EGG:
                         await self.me_egg(query=query, telegram_id=telegram_id)
-                    if os.getenv('AUTO_SELL_WORMS') == 'True':
+                    if settings.AUTO_SELL_WORMS:
                         await self.me_worms(query=query, telegram_id=telegram_id)
 
                 for (query, name, telegram_id) in accounts:
@@ -896,7 +896,7 @@ class Seed:
                     )
                     await self.is_leader_bird(query=query)
 
-                if os.getenv('AUTO_UPGRADE') == 'True':
+                if settings.AUTO_UPGRADE:
                     for (query, name, telegram_id) in accounts:
                         self.print_timestamp(
                             f"{Fore.WHITE + Style.BRIGHT}[ Boost ]{Style.RESET_ALL}"
@@ -906,7 +906,7 @@ class Seed:
                         await self.upgrade_mining_seed(query=query)
                         await self.upgrade_storage_size(query=query)
 
-                if os.getenv('AUTO_SPIN') == 'True':
+                if settings.AUTO_SPIN:
                     for (query, name, telegram_id) in accounts:
                         self.print_timestamp(
                             f"{Fore.WHITE + Style.BRIGHT}[ Spin & Merge Egg ]{Style.RESET_ALL}"
