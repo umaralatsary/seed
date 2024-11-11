@@ -28,7 +28,7 @@ class Seed:
             'Accept': '*/*',
             'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
             'Cache-Control': 'no-cache',
-            'Host': 'elb.seeddao.org',
+            'Host': 'alb.seeddao.org',
             'Origin': 'https://cf.seeddao.org',
             'Pragma': 'no-cache',
             'Referer': 'https://cf.seeddao.org/',
