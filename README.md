@@ -9,5 +9,6 @@ pip install -U -r requirements.txt```
 Create .env
 ```
 cp .env.example .env```
+
 ```
 python app.py```
