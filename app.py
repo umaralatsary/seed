@@ -201,7 +201,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Upgrade Storage Size: {str(err)} ]{Style.RESET_ALL}")
 
     async def me_worms(self, query: str, telegram_id: int):
-        url = 'https://elb.seeddao.org/api/v1/worms/me?page=1'
+        url = 'https://alb.seeddao.org/api/v1/worms/me?page=1'
         headers = {
             **self.headers,
             'telegram-data': query
