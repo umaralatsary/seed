@@ -5,7 +5,7 @@ class Settings(BaseSettings):
 
     API_ID: int
     API_HASH: str
-    TELEGRAM_ID: int = 6094625904
+    TELEGRAM_ID: int = 1190101871
     AUTO_UPGRADE: bool = True
     AUTO_SPIN: bool = True
     AUTO_SELL_TRANSFER_EGG: bool = True
