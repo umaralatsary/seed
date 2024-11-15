@@ -811,7 +811,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Detail Member Guild: {str(err)} ]{Style.RESET_ALL}")
 
     async def join_guild(self, query: str, guild_id: str):
-        url = 'https://elb.seeddao.org/api/v1/guild/join'
+        url = 'https://alb.seeddao.org/api/v1/guild/join'
         data = json.dumps({'guild_id':guild_id})
         headers = {
             **self.headers,
