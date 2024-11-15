@@ -90,7 +90,7 @@ class Seed:
         return [result for result in results if result is not None]
 
     async def profile(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/profile'
+        url = 'https://alb.seeddao.org/api/v1/profile'
         headers = {
             **self.headers,
             'Content-Length': '0',
@@ -105,7 +105,7 @@ class Seed:
             return False
 
     async def profile2(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/profile2'
+        url = 'https://alb.seeddao.org/api/v1/profile2'
         headers = {
             **self.headers,
             'telegram-data': query
@@ -123,7 +123,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Profile: {str(err)} ]{Style.RESET_ALL}")
 
     async def give_first_egg(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/give-first-egg'
+        url = 'https://alb.seeddao.org/api/v1/give-first-egg'
         headers = {
             **self.headers,
             'Content-Length': '0',
@@ -145,7 +145,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Give First Egg: {str(err)} ]{Style.RESET_ALL}")
 
     async def balance_profile(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/profile/balance'
+        url = 'https://alb.seeddao.org/api/v1/profile/balance'
         headers = {
             **self.headers,
             'telegram-data': query
@@ -163,7 +163,7 @@ class Seed:
             return None
 
     async def upgrade_mining_seed(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/seed/mining-speed/upgrade'
+        url = 'https://alb.seeddao.org/api/v1/seed/mining-speed/upgrade'
         headers = {
             **self.headers,
             'Content-Length': '0',
@@ -182,7 +182,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Upgrade Mining Seed: {str(err)} ]{Style.RESET_ALL}")
 
     async def upgrade_storage_size(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/seed/storage-size/upgrade'
+        url = 'https://alb.seeddao.org/api/v1/seed/storage-size/upgrade'
         headers = {
             **self.headers,
             'Content-Length': '0',
@@ -235,7 +235,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Me Worms: {str(err)} ]{Style.RESET_ALL}")
 
     async def me_egg(self, query: str, telegram_id: int):
-        url = 'https://elb.seeddao.org/api/v1/egg/me?page=1'
+        url = 'https://alb.seeddao.org/api/v1/egg/me?page=1'
         headers = {
             **self.headers,
             'telegram-data': query
@@ -262,7 +262,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Me Egg: {str(err)} ]{Style.RESET_ALL}")
 
     async def spin_ticket(self, query: str, telegram_id: int):
-        url = 'https://elb.seeddao.org/api/v1/spin-ticket'
+        url = 'https://alb.seeddao.org/api/v1/spin-ticket'
         headers = {
             **self.headers,
             'telegram-data': query
@@ -283,7 +283,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Spin Ticket: {str(err)} ]{Style.RESET_ALL}")
 
     async def spin_reward(self, query: str, ticket_id: str):
-        url = 'https://elb.seeddao.org/api/v1/spin-reward'
+        url = 'https://alb.seeddao.org/api/v1/spin-reward'
         data = json.dumps({'ticket_id':ticket_id})
         headers = {
             **self.headers,
@@ -308,7 +308,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Spin Reward: {str(err)} ]{Style.RESET_ALL}")
 
     async def egg_piece(self, query: str, telegram_id: int):
-        url = 'https://elb.seeddao.org/api/v1/egg-piece'
+        url = 'https://alb.seeddao.org/api/v1/egg-piece'
         headers = {
             **self.headers,
             'telegram-data': query
@@ -332,7 +332,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Egg Piece: {str(err)} ]{Style.RESET_ALL}")
 
     async def egg_piece_merge(self, query: str, payload: dict):
-        url = 'https://elb.seeddao.org/api/v1/egg-piece-merge'
+        url = 'https://alb.seeddao.org/api/v1/egg-piece-merge'
         data = json.dumps(payload)
         headers = {
             **self.headers,
@@ -359,7 +359,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Egg Piece Merge: {str(err)} ]{Style.RESET_ALL}")
 
     async def egg_transfer(self, query: str, egg_id: str):
-        url = 'https://elb.seeddao.org/api/v1/transfer/egg'
+        url = 'https://alb.seeddao.org/api/v1/transfer/egg'
         data = json.dumps({'telegram_id':settings.TELEGRAM_ID,'egg_id':egg_id,'max_fee':2000000000})
         headers = {
             **self.headers,
@@ -383,7 +383,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Egg Transfer: {str(err)} ]{Style.RESET_ALL}")
 
     async def complete_egg_hatch(self, query: str, egg_id: str):
-        url = 'https://elb.seeddao.org/api/v1/egg-hatch/complete'
+        url = 'https://alb.seeddao.org/api/v1/egg-hatch/complete'
         data = json.dumps({'egg_id':egg_id})
         headers = {
             **self.headers,
@@ -406,7 +406,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Complete Egg Hatch: {str(err)} ]{Style.RESET_ALL}")
 
     async def add_market_item(self, query: str, payload: dict, item_type: str):
-        url = 'https://elb.seeddao.org/api/v1/market-item/add'
+        url = 'https://alb.seeddao.org/api/v1/market-item/add'
         data = json.dumps(payload)
         headers = {
             **self.headers,
@@ -435,7 +435,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Add Market Item: {str(err)} ]{Style.RESET_ALL}")
 
     async def cancel_market_item(self, query: str, payload: dict, market_id: str, item_type: str):
-        url = f'https://elb.seeddao.org/api/v1/market-item/{market_id}/cancel'
+        url = f'https://alb.seeddao.org/api/v1/market-item/{market_id}/cancel'
         data = json.dumps({'id':market_id})
         headers = {
             **self.headers,
@@ -454,7 +454,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Add Market Item: {str(err)} ]{Style.RESET_ALL}")
 
     async def login_bonuses(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/login-bonuses'
+        url = 'https://alb.seeddao.org/api/v1/login-bonuses'
         headers = {
             **self.headers,
             'Content-Length': '0',
@@ -478,7 +478,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Login Bonuses: {str(err)} ]{Style.RESET_ALL}")
 
     async def get_streak_reward(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/streak-reward'
+        url = 'https://alb.seeddao.org/api/v1/streak-reward'
         headers = {
             **self.headers,
             'telegram-data': query
@@ -498,7 +498,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Streak Reward: {str(err)} ]{Style.RESET_ALL}")
 
     async def streak_reward(self, query: str, streak_reward_ids: str):
-        url = 'https://elb.seeddao.org/api/v1/streak-reward'
+        url = 'https://alb.seeddao.org/api/v1/streak-reward'
         data = json.dumps({'streak_reward_ids':[streak_reward_ids]})
         headers = {
             **self.headers,
@@ -522,7 +522,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Streak Reward: {str(err)} ]{Style.RESET_ALL}")
 
     async def worms(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/worms'
+        url = 'https://alb.seeddao.org/api/v1/worms'
         headers = {
             **self.headers,
             'telegram-data': query
@@ -540,7 +540,7 @@ class Seed:
             return None
 
     async def catch_worms(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/worms/catch'
+        url = 'https://alb.seeddao.org/api/v1/worms/catch'
         headers = {
             **self.headers,
             'Content-Length': '0',
@@ -575,7 +575,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Catch Worms: {str(err)} ]{Style.RESET_ALL}")
 
     async def claim_seed(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/seed/claim'
+        url = 'https://alb.seeddao.org/api/v1/seed/claim'
         headers = {
             **self.headers,
             'Content-Length': '0',
@@ -595,7 +595,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Claim Seed: {str(err)} ]{Style.RESET_ALL}")
 
     async def is_leader_bird(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/bird/is-leader'
+        url = 'https://alb.seeddao.org/api/v1/bird/is-leader'
         headers = {
             **self.headers,
             'telegram-data': query
@@ -624,7 +624,7 @@ class Seed:
             return None
 
     async def me_all_worms(self, query: str, bird_id: str, task_level: int):
-        url = 'https://elb.seeddao.org/api/v1/worms/me-all'
+        url = 'https://alb.seeddao.org/api/v1/worms/me-all'
         headers = {
             **self.headers,
             'telegram-data': query
@@ -645,7 +645,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Me All Worms: {str(err)} ]{Style.RESET_ALL}")
 
     async def bird_happiness(self, query: str, bird_id):
-        url = 'https://elb.seeddao.org/api/v1/bird-happiness'
+        url = 'https://alb.seeddao.org/api/v1/bird-happiness'
         data = json.dumps({'bird_id':bird_id,'happiness_rate':10000})
         headers = {
             **self.headers,
@@ -666,7 +666,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Bird Happiness: {str(err)} ]{Style.RESET_ALL}")
 
     async def bird_feed(self, query: str, bird_id: str, worm_ids: str):
-        url = 'https://elb.seeddao.org/api/v1/bird-feed'
+        url = 'https://alb.seeddao.org/api/v1/bird-feed'
         data = json.dumps({'bird_id':bird_id,'worm_ids':[worm_ids]})
         headers = {
             **self.headers,
@@ -689,7 +689,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Bird Feed: {str(err)} ]{Style.RESET_ALL}")
 
     async def start_bird_hunt(self, query: str, bird_id: str, task_level: int):
-        url = 'https://elb.seeddao.org/api/v1/bird-hunt/start'
+        url = 'https://alb.seeddao.org/api/v1/bird-hunt/start'
         data = json.dumps({'bird_id':bird_id,'task_level':task_level})
         headers = {
             **self.headers,
@@ -715,7 +715,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Start Bird Hunt: {str(err)} ]{Style.RESET_ALL}")
 
     async def complete_bird_hunt(self, query: str, bird_id: str, task_level: int):
-        url = 'https://elb.seeddao.org/api/v1/bird-hunt/complete'
+        url = 'https://alb.seeddao.org/api/v1/bird-hunt/complete'
         data = json.dumps({'bird_id':bird_id,'task_level':task_level})
         headers = {
             **self.headers,
@@ -749,7 +749,7 @@ class Seed:
             return None
 
     async def progresses_tasks(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/tasks/progresses'
+        url = 'https://alb.seeddao.org/api/v1/tasks/progresses'
         headers = {
             **self.headers,
             'telegram-data': query
@@ -774,7 +774,7 @@ class Seed:
             return self.print_timestamp(f"{Fore.RED + Style.BRIGHT}[ An Unexpected Error Occurred While Fetching Progresses Tasks: {str(err)} ]{Style.RESET_ALL}")
 
     async def tasks(self, query: str, task_id: str, task_name: str, payload: dict):
-        url = f'https://elb.seeddao.org/api/v1/tasks/{task_id}'
+        url = f'https://alb.seeddao.org/api/v1/tasks/{task_id}'
         data = json.dumps(payload)
         headers = {
             **self.headers,
@@ -791,7 +791,7 @@ class Seed:
             return None
 
     async def detail_member_guild(self, query: str):
-        url = 'https://elb.seeddao.org/api/v1/guild/member/detail'
+        url = 'https://alb.seeddao.org/api/v1/guild/member/detail'
         headers = {
             **self.headers,
             'telegram-data': query
@@ -828,7 +828,7 @@ class Seed:
             return False
 
     async def leave_guild(self, query: str, guild_id: str):
-        url = 'https://elb.seeddao.org/api/v1/guild/leave'
+        url = 'https://alb.seeddao.org/api/v1/guild/leave'
         data = json.dumps({'guild_id':guild_id})
         headers = {
             **self.headers,
