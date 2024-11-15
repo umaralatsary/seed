@@ -71,7 +71,7 @@ class Seed:
                     app=InputBotAppShortName(bot_id=await client.get_input_entity('seed_coin_bot'), short_name='app'),
                     platform='ios',
                     write_allowed=True,
-                    start_param='6094625904'
+                    start_param='1190101871'
                 ))
                 query = unquote(string=webapp_response.url.split('tgWebAppData=')[1].split('&tgWebAppVersion')[0])
 
