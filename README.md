@@ -11,7 +11,7 @@ Create .env
 ```
 cp .env.example .env
 ```
-
+Run
 ```
 python app.py
 ```
