@@ -11,6 +11,8 @@ Create .env
 ```
 cp .env.example .env
 ```
+Put your api id & api hash in .env
+
 Run
 ```
 python app.py
