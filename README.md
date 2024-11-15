@@ -4,11 +4,14 @@ Put telethon .session in sessions folder
 
 Install module
 ```
-pip install -U -r requirements.txt```
+pip install -U -r requirements.txt
+```
 
 Create .env
 ```
-cp .env.example .env```
+cp .env.example .env
+```
 
 ```
-python app.py```
+python app.py
+```
