@@ -16,7 +16,7 @@ from telethon.functions import messages, account
 from telethon.sync import TelegramClient
 from telethon.types import (
     InputBotAppShortName,
-    AppWebViewResultUrl
+    WebViewResultUrl
 )
 from urllib.parse import unquote
 from config import settings
